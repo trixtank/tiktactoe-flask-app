@@ -1,0 +1,52 @@
+This document explains the logic behind the different difficulty modes for the Tic-Tac-Toe bot.
+
+=========================
+🟢 EASY Difficulty
+=========================
+
+The "Easy" bot is designed to be unpredictable and make mistakes, making it a good opponent for beginners.
+
+Logic:
+1.  **Mostly Random (70% chance):** The bot will pick any available empty square on the board at random.
+2.  **Slightly Smart (30% chance):** The bot will attempt to make a "smart" move. This involves a very basic check:
+    - Can I win in the next move? If yes, take that spot.
+    - If not, can the human win in their next move? If yes, block that spot.
+    - If neither of the above is true, it falls back to picking a random empty square.
+
+This approach means the bot will often miss opportunities and leave itself open to being beaten.
+
+
+=========================
+🟡 MEDIUM Difficulty
+=========================
+
+The "Medium" bot follows a clear, hierarchical set of rules. It plays a solid game but doesn't look more than one move ahead.
+
+Logic (in this exact order):
+1.  **Check for Win:** The bot first checks if it can place its symbol in a square to win the game immediately. If it finds such a move, it will always take it.
+2.  **Check for Block:** If the bot cannot win, it then checks if the human player is one move away from winning. If so, the bot will play in that square to block the human.
+3.  **Make a Strategic Move:** If neither a winning nor a blocking move is available, the bot makes a strategic move based on position priority:
+    - **Priority 1: Center.** Take the center square (the most powerful position).
+    - **Priority 2: Corners.** If the center is taken, take one of the four corner squares.
+    - **Priority 3: Sides.** If the center and all available corners are taken, take any remaining side square.
+
+This makes the medium bot a competent opponent that won't make obvious mistakes.
+
+
+=========================
+🔴 HARD Difficulty (Minimax Algorithm)
+=========================
+
+The "Hard" bot is designed to be unbeatable. The best a human player can achieve against it is a tie. It uses a classic game theory algorithm called **Minimax**.
+
+Logic:
+1.  **Game Tree Simulation:** The bot doesn't just look one move ahead. It simulates a "tree" of every possible move for both itself and the human player until the game ends (in a win, loss, or tie).
+2.  **Scoring Outcomes:** It assigns a score to each possible final outcome:
+    - Bot Win: +10
+    - Human Win: -10
+    - Tie: 0
+3.  **Optimal Move Selection:** The algorithm works backward from these end-game scores. It assumes both players will play perfectly.
+    - On its turn (as the "Maximizer"), the bot will always choose the path that leads to the highest possible score.
+    - It assumes that on the human's turn (as the "Minimizer"), the human will always choose the path that leads to the lowest possible score (from the bot's perspective).
+
+By evaluating all future possibilities, the Minimax algorithm allows the bot to determine the absolute best move from the current board state to either guarantee a win or force a tie.

@@ -1,4 +1,392 @@
-<!DOCTYPE html>
+from flask import Flask, render_template, request, jsonify
+import os
+import random
+import logging
+import math
+import time
+
+app = Flask(__name__)
+app.secret_key = 'your-secret-key-here-bot'
+
+
+class TikTacToeBot:
+    def __init__(self, difficulty='medium', human_symbol='X'):
+        self.board = ['' for _ in range(9)]
+        self.human_player = human_symbol
+        self.bot_player = 'O' if human_symbol == 'X' else 'X'
+        self.current_player = 'X'  # X always starts
+        self.game_active = True
+        self.winner = None
+        self.difficulty = difficulty
+        self.move_count = 0
+
+    def reset_game(self, difficulty='medium', human_symbol='X'):
+        self.board = ['' for _ in range(9)]
+        self.human_player = human_symbol
+        self.bot_player = 'O' if human_symbol == 'X' else 'X'
+        self.current_player = 'X'  # X always starts
+        self.game_active = True
+        self.winner = None
+        self.difficulty = difficulty
+        self.move_count = 0
+
+    def make_human_move(self, position):
+        """Make a human move and validate it"""
+        if not self.game_active:
+            return {'success': False, 'message': 'Game is over'}
+
+        if self.board[position] != '':
+            return {'success': False, 'message': 'Cell already occupied'}
+
+        if self.current_player != self.human_player:
+            return {'success': False, 'message': 'Not your turn'}
+
+        # Make the move
+        self.board[position] = self.human_player
+        self.move_count += 1
+
+        # Check for winner
+        if self.check_winner():
+            self.game_active = False
+            self.winner = self.human_player
+            return {'success': True, 'game_over': True}
+
+        # Check for tie
+        if self.move_count >= 9:
+            self.game_active = False
+            self.winner = 'Tie'
+            return {'success': True, 'game_over': True}
+
+        # Switch to bot
+        self.current_player = self.bot_player
+        return {'success': True, 'game_over': False}
+
+    def make_bot_move(self):
+        """Make a bot move based on difficulty"""
+        if not self.game_active or self.current_player != self.bot_player:
+            return {'success': False, 'message': 'Not bot\'s turn'}
+
+        # Get bot move based on difficulty
+        position = None
+        if self.difficulty == 'easy':
+            position = self.get_easy_move()
+        elif self.difficulty == 'medium':
+            position = self.get_medium_move()
+        else:  # hard
+            position = self.get_hard_move()
+
+        if position is None:
+            return {'success': False, 'message': 'No valid moves'}
+
+        # Make the move
+        self.board[position] = self.bot_player
+        self.move_count += 1
+
+        # Check for winner
+        if self.check_winner():
+            self.game_active = False
+            self.winner = self.bot_player
+            return {'success': True, 'game_over': True, 'position': position}
+
+        # Check for tie
+        if self.move_count >= 9:
+            self.game_active = False
+            self.winner = 'Tie'
+            return {'success': True, 'game_over': True, 'position': position}
+
+        # Switch to human
+        self.current_player = self.human_player
+        return {'success': True, 'game_over': False, 'position': position}
+
+    def get_easy_move(self):
+        """Easy bot - mostly random with occasional smart moves"""
+        available_moves = [i for i, cell in enumerate(
+            self.board) if cell == '']
+        if not available_moves:
+            return None
+
+        # 30% chance to make a smart move
+        if random.random() < 0.3:
+            smart_move = self.get_smart_move()
+            if smart_move is not None:
+                return smart_move
+
+        return random.choice(available_moves)
+
+    def get_medium_move(self):
+        """Medium bot - balanced strategy"""
+        # First check if bot can win
+        win_move = self.find_winning_move(self.bot_player)
+        if win_move is not None:
+            return win_move
+
+        # Then check if need to block human
+        block_move = self.find_winning_move(self.human_player)
+        if block_move is not None:
+            return block_move
+
+        # Otherwise make a strategic move
+        return self.get_strategic_move()
+
+    def get_hard_move(self):
+        """Hard bot - uses minimax algorithm"""
+        return self.minimax_move()
+
+    def get_smart_move(self):
+        """Basic smart move logic"""
+        # Try to win
+        win_move = self.find_winning_move(self.bot_player)
+        if win_move is not None:
+            return win_move
+
+        # Try to block
+        block_move = self.find_winning_move(self.human_player)
+        if block_move is not None:
+            return block_move
+
+        return None
+
+    def get_strategic_move(self):
+        """Strategic move selection"""
+        available_moves = [i for i, cell in enumerate(
+            self.board) if cell == '']
+        if not available_moves:
+            return None
+
+        # Prefer center
+        if 4 in available_moves:
+            return 4
+
+        # Prefer corners
+        corners = [0, 2, 6, 8]
+        corner_moves = [i for i in corners if i in available_moves]
+        if corner_moves:
+            return random.choice(corner_moves)
+
+        # Take any available move
+        return random.choice(available_moves)
+
+    def find_winning_move(self, player):
+        """Find a move that would result in a win for the given player"""
+        for i in range(9):
+            if self.board[i] == '':
+                # Try this move
+                self.board[i] = player
+                if self.check_winner():
+                    self.board[i] = ''  # Undo the move
+                    return i
+                self.board[i] = ''  # Undo the move
+        return None
+
+    def minimax_move(self):
+        """Use minimax algorithm to find the best move"""
+        best_score = float('-inf')
+        best_move = None
+
+        available_moves = [i for i, cell in enumerate(
+            self.board) if cell == '']
+
+        for i in available_moves:
+            self.board[i] = self.bot_player
+            score = self.minimax(0, False)
+            self.board[i] = ''
+
+            if score > best_score:
+                best_score = score
+                best_move = i
+
+        return best_move if best_move is not None else random.choice(available_moves)
+
+    def minimax(self, depth, is_maximizing):
+        """Minimax algorithm implementation"""
+        # Check for terminal states
+        winner = self.check_winner_for_minimax()
+        if winner == self.bot_player:
+            return 10 - depth
+        elif winner == self.human_player:
+            return depth - 10
+
+        available_moves = [i for i, cell in enumerate(
+            self.board) if cell == '']
+
+        if not available_moves:
+            return 0
+
+        if is_maximizing:
+            # Bot's turn
+            best_score = float('-inf')
+            for i in available_moves:
+                self.board[i] = self.bot_player
+                score = self.minimax(depth + 1, False)
+                self.board[i] = ''
+                best_score = max(score, best_score)
+            return best_score
+        else:
+            # Human's turn
+            best_score = float('inf')
+            for i in available_moves:
+                self.board[i] = self.human_player
+                score = self.minimax(depth + 1, True)
+                self.board[i] = ''
+                best_score = min(score, best_score)
+            return best_score
+
+    def check_winner_for_minimax(self):
+        """Check winner for minimax (returns player symbol or None)"""
+        winning_combinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],  # rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],  # columns
+            [0, 4, 8], [2, 4, 6]              # diagonals
+        ]
+
+        for combo in winning_combinations:
+            if (self.board[combo[0]] == self.board[combo[1]] == self.board[combo[2]]
+                    and self.board[combo[0]] != ''):
+                return self.board[combo[0]]
+        return None
+
+    def check_winner(self):
+        """Check if there's a winner"""
+        return self.check_winner_for_minimax() is not None
+
+    def get_game_state(self):
+        """Get current game state"""
+        return {
+            'board': self.board,
+            'current_player': self.current_player,
+            'game_active': self.game_active,
+            'winner': self.winner,
+            'difficulty': self.difficulty,
+            'human_player': self.human_player,
+            'bot_player': self.bot_player,
+            'move_count': self.move_count
+        }
+
+
+# Initialize game
+game = TikTacToeBot()
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/make_move', methods=['POST'])
+def make_move():
+    """Handle human move and bot response"""
+    try:
+        data = request.get_json()
+        logging.info(f"Received move request: {data}")
+        position = int(data['position'])
+
+        # Validate position
+        if position < 0 or position > 8:
+            return jsonify({
+                'success': False,
+                'message': 'Invalid position'
+            })
+
+        # Make human move
+        result = game.make_human_move(position)
+
+        if not result['success']:
+            return jsonify(result)
+
+        game_state = game.get_game_state()
+
+        # If game is still active and it's bot's turn, make bot move
+        if game.game_active and game.current_player == game.bot_player:
+            # Add small delay for better UX (simulate thinking)
+            time.sleep(0.3)
+            bot_result = game.make_bot_move()
+            game_state = game.get_game_state()
+
+            if bot_result['success']:
+                game_state['bot_move'] = bot_result.get('position')
+
+        return jsonify({
+            'success': True,
+            'game_state': game_state
+        })
+
+    except Exception as e:
+        logging.error(f"Error in /make_move endpoint: {e}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        })
+
+
+@app.route('/reset_game', methods=['POST'])
+def reset_game():
+    """Reset the game with new settings"""
+    try:
+        data = request.get_json()
+        logging.info(f"Received reset_game request: {data}")
+        difficulty = data.get('difficulty', 'medium')
+        human_symbol = data.get('human_symbol', 'X')
+
+        # Validate inputs
+        if difficulty not in ['easy', 'medium', 'hard']:
+            difficulty = 'medium'
+        if human_symbol not in ['X', 'O']:
+            human_symbol = 'X'
+
+        game.reset_game(difficulty, human_symbol)
+
+        game_state = game.get_game_state()
+
+        # If bot is 'X', it should make the first move right away
+        if game.game_active and game.current_player == game.bot_player:
+            bot_result = game.make_bot_move()
+            game_state = game.get_game_state()
+            if bot_result['success']:
+                game_state['bot_move'] = bot_result.get('position')
+
+        return jsonify({
+            'success': True,
+            'game_state': game_state
+        })
+
+    except Exception as e:
+        logging.error(f"Error in /reset_game endpoint: {e}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        })
+
+
+@app.route('/get_game_state', methods=['GET'])
+def get_game_state():
+    """Get current game state"""
+    return jsonify(game.get_game_state())
+
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint"""
+    return jsonify({
+        'status': 'healthy',
+        'game_active': game.game_active,
+        'current_player': game.current_player
+    })
+
+
+if __name__ == '__main__':
+    # Configure basic logging to write to a file
+    logging.basicConfig(
+        filename='log.txt',
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
+
+    # Create templates folder if it doesn't exist
+    if not os.path.exists('templates'):
+        os.makedirs('templates')
+
+    # Create the HTML template
+    html_content = '''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -521,7 +909,7 @@
             // Update game status
             if (!gameState.game_active) {
                 if (gameState.winner === 'Tie') {
-                    gameStatus.innerHTML = '<span class="win-message">🤝 It\'s a Tie!</span>';
+                    gameStatus.innerHTML = '<span class="win-message">🤝 It\\\'s a Tie!</span>';
                 } else {
                     const winnerText = gameState.winner === gameState.human_player ? 'You' : 'Bot';
                     gameStatus.innerHTML = `<span class="win-message">🎉 ${winnerText} Win!</span>`;
@@ -553,4 +941,17 @@
         });
     </script>
 </body>
-</html>
+</html>'''
+
+    # Write the HTML template to a file
+    template_path = os.path.join('templates', 'index.html')
+    with open(template_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
+    logging.info("Server starting up...")
+    print("🎮 TikTacToe Bot Server Starting!")
+    print(f"📂 Created/Updated {template_path}")
+    print("🌐 Open your browser to: http://localhost:5001")
+    print("🛑 Press Ctrl+C to stop the server")
+
+    app.run(debug=True, host='0.0.0.0', port=5001)

@@ -1,0 +1,62 @@
+2025-07-09 23:10:04,206 - INFO - Server starting up...
+2025-07-09 23:10:04,223 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.0.0.195:5001
+2025-07-09 23:10:04,223 - INFO - [33mPress CTRL+C to quit[0m
+2025-07-09 23:10:04,224 - INFO -  * Restarting with stat
+2025-07-09 23:10:04,373 - INFO - Server starting up...
+2025-07-09 23:10:04,383 - WARNING -  * Debugger is active!
+2025-07-09 23:10:04,384 - INFO -  * Debugger PIN: 840-219-949
+2025-07-09 23:10:09,890 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:09] "GET / HTTP/1.1" 200 -
+2025-07-09 23:10:10,252 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:10] "GET /get_game_state HTTP/1.1" 200 -
+2025-07-09 23:10:10,329 - INFO - Received reset_game request: {'difficulty': 'medium', 'human_symbol': 'X'}
+2025-07-09 23:10:10,329 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:10] "POST /reset_game HTTP/1.1" 200 -
+2025-07-09 23:10:16,065 - INFO - Received reset_game request: {'difficulty': 'hard', 'human_symbol': 'X'}
+2025-07-09 23:10:16,065 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:16] "POST /reset_game HTTP/1.1" 200 -
+2025-07-09 23:10:17,142 - INFO - Received move request: {'position': 0}
+2025-07-09 23:10:17,486 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:17] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:19,601 - INFO - Received move request: {'position': 6}
+2025-07-09 23:10:19,903 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:19] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:20,916 - INFO - Received move request: {'position': 5}
+2025-07-09 23:10:21,217 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:21] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:23,009 - INFO - Received move request: {'position': 7}
+2025-07-09 23:10:23,310 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:23] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:24,430 - INFO - Received move request: {'position': 2}
+2025-07-09 23:10:24,430 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:24] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:26,143 - INFO - Received reset_game request: {'difficulty': 'hard', 'human_symbol': 'X'}
+2025-07-09 23:10:26,143 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:26] "POST /reset_game HTTP/1.1" 200 -
+2025-07-09 23:10:27,264 - INFO - Received move request: {'position': 2}
+2025-07-09 23:10:27,608 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:27] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:28,951 - INFO - Received move request: {'position': 6}
+2025-07-09 23:10:29,253 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:29] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:30,488 - INFO - Received move request: {'position': 7}
+2025-07-09 23:10:30,789 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:30] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:32,995 - INFO - Received move request: {'position': 0}
+2025-07-09 23:10:33,295 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:33] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:34,522 - INFO - Received move request: {'position': 5}
+2025-07-09 23:10:34,522 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:34] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:36,594 - INFO - Received reset_game request: {'difficulty': 'hard', 'human_symbol': 'X'}
+2025-07-09 23:10:36,594 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:36] "POST /reset_game HTTP/1.1" 200 -
+2025-07-09 23:10:40,133 - INFO - Received reset_game request: {'difficulty': 'hard', 'human_symbol': 'O'}
+2025-07-09 23:10:40,521 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:40] "POST /reset_game HTTP/1.1" 200 -
+2025-07-09 23:10:41,536 - INFO - Received move request: {'position': 4}
+2025-07-09 23:10:41,843 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:41] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:43,733 - INFO - Received move request: {'position': 2}
+2025-07-09 23:10:44,034 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:44] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:46,220 - INFO - Received move request: {'position': 3}
+2025-07-09 23:10:46,520 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:46] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:49,007 - INFO - Received move request: {'position': 7}
+2025-07-09 23:10:49,307 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:49] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:51,975 - INFO - Received reset_game request: {'difficulty': 'easy', 'human_symbol': 'O'}
+2025-07-09 23:10:51,976 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:51] "POST /reset_game HTTP/1.1" 200 -
+2025-07-09 23:10:53,473 - INFO - Received move request: {'position': 4}
+2025-07-09 23:10:53,773 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:53] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:55,079 - INFO - Received move request: {'position': 0}
+2025-07-09 23:10:55,380 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:55] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:10:57,007 - INFO - Received move request: {'position': 6}
+2025-07-09 23:10:57,307 - INFO - 127.0.0.1 - - [09/Jul/2025 23:10:57] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:11:00,075 - INFO - Received move request: {'position': 3}
+2025-07-09 23:11:00,076 - INFO - 127.0.0.1 - - [09/Jul/2025 23:11:00] "POST /make_move HTTP/1.1" 200 -
+2025-07-09 23:11:01,411 - INFO - Received reset_game request: {'difficulty': 'easy', 'human_symbol': 'O'}
+2025-07-09 23:11:01,411 - INFO - 127.0.0.1 - - [09/Jul/2025 23:11:01] "POST /reset_game HTTP/1.1" 200 -
